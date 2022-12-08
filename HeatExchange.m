@@ -8,6 +8,7 @@ Ti=80+273; To=40+273; mdot=[3200/(90*60),3200/(150*60)]; Tbar=(Ti+To)/2;
 Do=50/1000;
 Di=45/1000;
 D=65/1000;
+Dair=D+20/1000;
 Dh=D-Do;
 ks=400;
 Ai=pi*Di;
@@ -19,12 +20,12 @@ WaterAnnulus=true;
 CT=table(Do,Di,D,Dh,ks);
 %-------------------------------------------------------------------------%
 %% Cross Flow Parameters
-Rows=6;
-Columns=14;
+Rows=4;
+Columns=4;
 N=Rows*Columns;
-L_g=5;
-Height=10;
-Width=6;
+L_g=1;
+Height=1;
+Width=1;
 ST=Height/Rows;
 SL=Width/Columns;
 SD=sqrt(SL^2+(ST/2)^2);
@@ -123,19 +124,35 @@ Annulus.L=L;
 Circle.L=L;
 delta=100;
 
-while delta>5
-
-    if CFP.Aligned==true
-        [CF,TF]=CrossFlow(Run150.UACFcmaxMix,Water,Chem,CFP); 
-    end
-
-
-L_CF=TF.L/N;
-TF_RE=TF.REd;
-CF_RE=TF.REd;
-delta=abs(L_CF-CFP.L_g)/CFP.L_g;
-CFP.L_g=L_CF;
-CFP.A=CFP.L_g*Height;
+Z=0;
+Tol=.005;
+while Z==0
+if CFP.Aligned==true
+    [CF,TF]=CrossFlow(Run150.UACFcmaxMix,Water,Chem,CFP); 
+end
+Z=TF.L<CFP.L_g*(1+Tol) && TF.L>CFP.L_g*(1-Tol);
+CFP.L_g=TF.L;
+CFP.A=L_g*Height;
 end
 
-TF.LN=TF.L/N;
+varname={'Operation Time (mins)','Operation Cost (per day)', 'Length (m)',...
+    'Cross Section Area (m^2)','Floor Footprint (m^2)','Volume (m^3)',...
+    'Chemical Temperature Inlet (^o C)','Chemical Temperature Outlet (^o C)',...
+    'Water Temperature Inlet (^o C)','Water Temperatrue Outlet (^o C)'};
+rowname={'Concentric Tubes','Cross Flow Bank of Tubes'};
+var1=string([90;150]);
+var2=string(['$1,000';'$2,000']);
+var3=[Annulus.L;CF.L];
+var4=[Dair^2;Height*Width];
+var5=[Annulus.L*Dair;CF.L*Width];
+var6=[Annulus.L*Dair*Dair;CF.L*Width*Height];
+var7=[Chem.Ti;Chem.Ti];
+var8=[Chem.To;Chem.To];
+var9=[Water.Ti;Water.Ti];
+var10=[Water.To(1);Water.To(2)];
+
+
+
+CTHE=table(var1,var2,var3,var4,var5,var6,var7,var8,var9,var10,'VariableNames',varname,'RowNames',rowname)
+
+

@@ -58,7 +58,7 @@ if sys.Aligned == true
     end
     
 end
-CF.REd
+
 CF.NUD=C1*C2*CF.REd^m*CF.Prf^.36*(CF.Prf/TF.Prf)^(1/4);
 
 CF.hbar=CF.NUD*CF.kf/sys.D;
@@ -84,6 +84,6 @@ RCF=1/(CF.hbar*pi*sys.D);
 RTF=1/(TF.hbar*pi*sys.D);
 
 Req=RCF+RTF;
-TF.L=UA*Req;
-CF.L=UA*Req;
+TF.L=UA*Req/sys.N;
+CF.L=UA*Req/sys.N;
 end
