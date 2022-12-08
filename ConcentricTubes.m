@@ -17,6 +17,8 @@ Annulus.xfdt=Annulus.xfdh;
 Circle.REd=4*mdotC/(Tube.Di*pi*Circle.muf);
 Circle.xfdh=10*Tube.Di;
 Circle.xfdt=Circle.xfdh;
+% Annulus.f=(0.79*log(Annulus.REd)-1.64)^-2;
+% Circle.f=(0.79*log(Annulus.REd)-1.64)^-2;
 if Annulus.Ti<Circle.Ti
     n=.4; 
     Annulus.NUdbar=0.023*Annulus.REd^(0.8)*Annulus.Prf^(n);
@@ -30,14 +32,22 @@ if Annulus.Ti>Circle.Ti
     Circle.NUdbar=0.023*Circle.REd^(0.8)*Circle.Prf^(n);
 end
 
-Annulus.hbar=Annulus.NUdbar*Annulus.kf/Annulus.muf;
+% Annulus.NUdbar=(Annulus.f/8*(Annulus.REd-1000)*Annulus.Prf)/...
+%     (1+12.7*(Annulus.f/8)^(1.2)*Annulus.Prf^(2/3)-1);
+% Circle.NUdbar=(Circle.f/8*(Circle.REd-1000)*Circle.Prf)/...
+%     (1+12.7*(Circle.f/8)^(1.2)*Circle.Prf^(2/3)-1);
+
+
+Annulus.hbar=Annulus.NUdbar*Annulus.kf/Tube.Di;
 Circle.hbar=Circle.NUdbar*Circle.kf/Circle.muf;
 Rw=log(Tube.Do/Tube.Di)/(2*pi*ks);
 RhA=1/(Annulus.hbar*pi*Tube.Do);
 RhC=1/(Circle.hbar*pi*Tube.Di);
-Req=RhA+RhC+Rw;
+Annulus.Req=RhA+RhC+Rw;
 
-L=UA*Req;
-
+L=UA*Annulus.Req;
+Annulus.UA=UA;
+Circle.UA=UA;
+Circle.Req=Annulus.Req;
 end
 

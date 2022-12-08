@@ -19,20 +19,20 @@ WaterAnnulus=true;
 CT=table(Do,Di,D,Dh,ks);
 %-------------------------------------------------------------------------%
 %% Cross Flow Parameters
-Rows=4;
-Columns=8;
+Rows=6;
+Columns=14;
 N=Rows*Columns;
-L=0.5;
-Height=.5;
-Width=.35;
+L_g=5;
+Height=10;
+Width=6;
 ST=Height/Rows;
 SL=Width/Columns;
 SD=sqrt(SL^2+(ST/2)^2);
-A_CS=L*Height;
+A_CS=L_g*Height;
 D=ST/2.5;
 
 Aligned=true;
-CFP=table(Rows,Columns,N,L,Height, Width, ST, SL, SD, A_CS,D,Aligned);
+CFP=table(Rows,Columns,N,L_g,Height, Width, ST, SL, SD, A_CS,D,Aligned);
 CFP=renamevars(CFP,"A_CS","A");
 %-------------------------------------------------------------------------%
 Chem=table(Ti,To,Tbar,mdot,P,vf, hfg, cpf, muf, kf, Prf);
@@ -119,7 +119,23 @@ if WaterAnnulus==false
         Chem.Prf,Chem.To,Chem.Ti,Water.muf(1),Water.kf(1),Water.Prf(1),...
         Water.To(1),Water.Ti,CT,Chem.mdot(1),Water.mdot,ks);
 end
+Annulus.L=L;
+Circle.L=L;
+delta=100;
 
-if CFP.Aligned==true
-    [CF,TF]=CrossFlow(Run150.UACFcmaxMix,Water,Chem,CFP); 
+while delta>5
+
+    if CFP.Aligned==true
+        [CF,TF]=CrossFlow(Run150.UACFcmaxMix,Water,Chem,CFP); 
+    end
+
+
+L_CF=TF.L/N;
+TF_RE=TF.REd;
+CF_RE=TF.REd;
+delta=abs(L_CF-CFP.L_g)/CFP.L_g;
+CFP.L_g=L_CF;
+CFP.A=CFP.L_g*Height;
 end
+
+TF.LN=TF.L/N;
